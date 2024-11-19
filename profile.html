@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+{% load static %}
+{% load cart_template_tag %}
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Edentaste Foods | Cart</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="{% static 'img/favicon.png' %}" rel="icon">
+  <link href="{% static 'img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Core CSS -->
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/aos/aos.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+
+  <style>
+    /* Main styles for header */
+    header {
+      background: linear-gradient(to right, #ff6a00, #ff9e00);
+      padding: 20px 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    header .logo h1 {
+      font-size: 2.5rem;
+      color: white;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    header .navbar a {
+      color: white;
+      padding: 10px 15px;
+      text-transform: uppercase;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    header .navbar a:hover {
+      background: #ff9e00;
+      color: white;
+    }
+
+    /* Profile Section */
+    #profile-section {
+      background-color: #f8f9fa;
+      padding: 50px 0;
+    }
+
+    #profile-section .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .profile-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .profile-wrapper img {
+      border-radius: 50%;
+      max-width: 300px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-details {
+      flex: 1;
+      padding-left: 20px;
+      font-size: 1.1rem;
+    }
+
+    .profile-details h1 {
+      font-size: 2rem;
+      color: #333;
+    }
+
+    .profile-details h4 {
+      color: #ff6a00;
+    }
+
+    .profile-details p {
+      color: #777;
+      margin: 5px 0;
+    }
+
+    .profile-details .action button {
+      background-color: #ff6a00;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .profile-details .action button:hover {
+      background-color: #ff9e00;
+    }
+
+    /* Footer */
+    footer {
+      background-color: #222;
+      padding: 20px 0;
+      color: white;
+      text-align: center;
+    }
+
+    footer a {
+      color: #ff9e00;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Mobile-responsive adjustments */
+    @media (max-width: 768px) {
+      .profile-wrapper {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .profile-details {
+        text-align: center;
+      }
+
+      .profile-details .action button {
+        width: 100%;
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="fixed-top">
+    <div class="container">
+      <div class="header-container d-flex justify-content-between align-items-center">
+        <div class="logo">
+          <h1 class="text-light"><a href="{% url 'index' %}"><span>Edentaste</span></a></h1>
+        </div>
+
+        <nav id="navbar" class="navbar">
+          <ul>
+            {% if user.is_authenticated %}
+              <li><a class="nav-link" href="{% url 'index' %}">Home</a></li>
+              <li><a class="nav-link" href="{% url 'orderlist' %}">Cart <span class="badge" style="background: red;">{{request.user | cart_item_count}}</span></a></li>
+            {% endif %}
+
+            {% if user.is_superuser %}
+              <li><a class="nav-link" href="{% url 'add_product' %}">Add Product</a></li>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+              <li class="dropdown">
+                <a class="nav-link" href="{% url 'profile' %}">
+                  {{ user.username }} <img class="rounded-circle account-img" src="{{ user.customer.profile_pic.url }}" alt="Profile pic" style="width: 30px; height:30px;">
+                </a>
+                <ul>
+                  <li><a href="{% url 'profile' %}">Profile</a></li>
+                  <li><a href="{% url 'user_logout' %}" style="color: red;">Logout</a></li>
+                </ul>
+              </li>
+            {% else %}
+              <li><a class="getstarted" href="{% url 'user_login' %}">Login</a></li>
+              <li><a class="getstarted" href="{% url 'user_register' %}">Register</a></li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header><!-- End Header -->
+
+  <!-- ======= Profile Section ======= -->
+  <section id="profile-section">
+    <div class="container">
+      <div class="profile-wrapper">
+        <div class="preview">
+          <img src="{{ user.customer.profile_pic.url }}" alt="Profile Pic" class="img-fluid">
+        </div>
+
+        <div class="profile-details">
+          <h1>{{ user.first_name|capitalize }} {{ user.last_name|capitalize }}</h1>
+          <h4>({{ user.username|capitalize }})</h4>
+          <p><strong>Phone:</strong> <span style="color: green;">{{ phone.phone_field }}</span></p>
+          <p><strong>Email:</strong> {{ user.email }}</p>
+          <div class="action">
+            <button>Edit Profile</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><!-- End Profile Section -->
+
+  <!-- ======= Footer ======= -->
+  <footer>
+    <p>&copy; 2024 Edentaste Foods. All rights reserved.</p>
+  </footer><!-- End Footer -->
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'vendor/aos/aos.js' %}"></script>
+
+  <script>
+    AOS.init();
+  </script>
+</body>
+
+</html>
