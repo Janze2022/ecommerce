@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+{% load static %}
+{% load cart_template_tag %}
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Ecommerce | Cart</title>
+
+  <!-- Favicons -->
+  <link href="{% static 'img/favicon.png' %}" rel="icon">
+  <link href="{% static 'img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #2c3e50;
+      padding: 10px 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+    }
+
+    .navbar .logo h1 {
+      font-size: 1.8rem;
+      margin: 0;
+    }
+
+    .navbar nav {
+      display: flex;
+      gap: 15px;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+      font-size: 16px;
+      transition: 0.3s;
+      border-radius: 5px;
+    }
+
+    .navbar a:hover {
+      background-color: #3498db;
+    }
+
+    .user-dropdown {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .user-dropdown img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+    }
+
+    .cart-count {
+      background-color: #e67e22;
+      padding: 2px 6px;
+      border-radius: 50%;
+      font-size: 14px;
+      color: white;
+    }
+
+    .cart-table {
+      width: 100%;
+      margin-top: 30px;
+      border-collapse: collapse;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .cart-table thead {
+      background-color: #2c3e50;
+      color: white;
+    }
+
+    .cart-table th, .cart-table td {
+      padding: 15px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+      font-size: 16px;
+    }
+
+    .cart-table tbody tr:hover {
+      background-color: #ecf0f1;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #2980b9;
+      transform: scale(1.05);
+    }
+
+    .checkout-btn {
+      background-color: #e67e22;
+    }
+
+    .checkout-btn:hover {
+      background-color: #d35400;
+    }
+
+    .total-price {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .empty-cart {
+      text-align: center;
+      padding: 50px;
+      font-size: 18px;
+      color: #999;
+    }
+
+    .back-to-top {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #3498db;
+      color: white;
+      padding: 10px;
+      border-radius: 50%;
+      display: none;
+      cursor: pointer;
+    }
+
+    .back-to-top:hover {
+      background-color: #2980b9;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="fixed-top">
+    <div class="container">
+      <div class="navbar">
+        <div class="logo">
+          <h1><a href="{% url 'index' %}">Ecommerce</a></h1>
+        </div>
+        <nav>
+          <a href="{% url 'index' %}">Home</a>
+          <a href="{% url 'orderlist' %}">Cart <span class="cart-count">{{request.user | cart_item_count}}</span></a>
+          <a href="{% url 'add_product' %}">Add Product</a>
+
+          {% if user.is_authenticated %}
+            <div class="user-dropdown">
+              <span>{{ user.username }}</span>
+              <img src="{{user.customer.profile_pic.url}}" alt="Profile Pic">
+            </div>
+            <div class="dropdown-content">
+              <a href="{% url 'profile' %}">Profile</a>
+              <a href="{% url 'user_logout' %}" style="color: red;">Logout</a>
+            </div>
+          {% else %}
+            <a href="{% url 'user_login' %}">Login</a>
+            <a href="{% url 'user_register' %}">Register</a>
+          {% endif %}
+        </nav>
+      </div>
+    </div>
+  </header><!-- End Header -->
+
+  <main id="main">
+    <!-- Breadcrumbs -->
+    <section class="breadcrumbs">
+      <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>Orderlist</h2>
+        </div>
+      </div>
+    </section><!-- End Breadcrumbs -->
+
+    {% for message in messages %}
+    <div class="alert alert-success text-center">
+      <strong>{{ message }}</strong>
+    </div>
+    {% endfor %}
+
+    <!-- Cart Items -->
+    <section class="order-list">
+      <div class="container">
+        <table class="cart-table">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Item Name</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Final Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order_item in order.items.all %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td><a href="{% url 'product_desc' order_item.product.pk %}">{{ order_item.product.name }}</a></td>
+              <td>₱ {{ order_item.product.price }} / <span style="color: chocolate;">{{ order_item.product.sale_in }}</span></td>
+              <td>
+                <a href="{% url 'add_item' order_item.product.pk %}" class="btn">+</a>
+                {{ order_item.quantity }}
+                <a href="{% url 'remove_item' order_item.product.pk %}" class="btn">-</a>
+              </td>
+              <td>₱ {{ order_item.get_total_item_price }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5" class="empty-cart">
+                <b>Your cart is empty</b>
+                <a href="{% url 'index' %}" class="btn">Continue Shopping</a>
+              </td>
+            </tr>
+            {% endfor %}
+
+            {% if order.get_total_price %}
+            <tr>
+              <td colspan="4" class="total-price">Total Order Price</td>
+              <td class="total-price">₱ {{ order.get_total_price }}</td>
+            </tr>
+            <tr>
+              <td colspan="5">
+                <a href="{% url 'checkout_page' %}" class="btn checkout-btn">Proceed to Checkout</a>
+                <a href="{% url 'index' %}" class="btn">Continue Shopping</a>
+              </td>
+            </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main><!-- End #main -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="fa fa-arrow-up"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+  <script>
+    // Show "back-to-top" button when scrolling
+    window.addEventListener("scroll", function () {
+      let backToTopButton = document.querySelector(".back-to-top");
+      if (window.scrollY > 500) {
+        backToTopButton.style.display = "block";
+      } else {
+        backToTopButton.style.display = "none";
+      }
+    });
+  </script>
+</body>
+
+</html>

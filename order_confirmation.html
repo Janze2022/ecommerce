@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Order Confirmation - Online Store</title>
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/style.css' %}" rel="stylesheet">
+</head>
+
+<body>
+  <header>
+    <div class="navbar">
+      <h1><a href="{% url 'index' %}">Online Store</a></h1>
+      <div>
+        <a href="{% url 'index' %}">Home</a>
+        <a href="{% url 'orderlist' %}">Cart ({{ request.user | cart_item_count }})</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}">Profile</a>
+          <a href="{% url 'user_logout' %}" style="color:red;">Logout</a>
+        {% else %}
+          <a href="{% url 'user_login' %}">Login</a>
+          <a href="{% url 'user_register' %}">Register</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <section id="order-confirmation">
+    <div class="container">
+      <h2>Order Confirmation</h2>
+      <p>Your order has been placed successfully. Thank you for shopping with us!</p>
+
+      <div class="order-details">
+        <h3>Order Details</h3>
+        <ul>
+          <li>Order ID: {{ order.id }}</li>
+          <li>Total Amount: ${{ order.total_amount }}</li>
+          <li>Shipping Address: {{ order.shipping_address }}</li>
+          <!-- Add more order details as needed -->
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Service</a>
+    <a href="#">Contact Us</a>
+    <p>&copy; 2024 Online Store. All rights reserved.</p>
+  </footer>
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</body>
+
+</html>
